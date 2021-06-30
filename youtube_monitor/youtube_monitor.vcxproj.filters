@@ -31,6 +31,18 @@
     <Filter Include="Файлы заголовков\imgui">
       <UniqueIdentifier>{d37d9837-2b55-438d-8200-94530044dea9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\net">
+      <UniqueIdentifier>{7c64221e-2c68-410b-8758-57e1bbf2caee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\net">
+      <UniqueIdentifier>{2ee114e7-e0eb-44b2-acd7-d76d25a01359}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\core">
+      <UniqueIdentifier>{61ac94bc-3607-4dda-bf2d-735672a40f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\core">
+      <UniqueIdentifier>{7c1defbd-545d-484e-a9d5-e15b97ffbe6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,6 +70,15 @@
       <Filter>Исходные файлы\imgui</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>Исходные файлы\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="net\net.cpp">
+      <Filter>Исходные файлы\net</Filter>
+    </ClCompile>
+    <ClCompile Include="core\core.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stdlib.cpp">
       <Filter>Исходные файлы\imgui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -100,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="net\net.h">
+      <Filter>Файлы заголовков\net</Filter>
+    </ClInclude>
+    <ClInclude Include="core\core.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_stdlib.h">
+      <Filter>Файлы заголовков\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -54,3 +54,34 @@ void helpers::ResetDevice()
 
 	ImGui_ImplDX9_CreateDeviceObjects();
 }
+
+std::string helpers::ParseString(std::string before, std::string after, std::string source)
+{
+	if (!before.empty() && !after.empty() && !source.empty() && (source.find(before) != std::string::npos) && (source.find(after) != std::string::npos))
+	{
+		std::string t = strstr(source.c_str(), before.c_str());
+		t.erase(0, before.length());
+		std::string::size_type loc = t.find(after, 0);
+		t = t.substr(0, loc);
+		return t;
+	}
+	else
+		return "";
+}
+
+bool helpers::LoadUrls()
+{
+	std::ifstream in(globals::s_path, std::ios::in);
+	if (in.is_open())
+	{
+		std::string line;
+		while (getline(in, line))
+			globals::v_adrs.push_back(line);
+
+		in.close();
+
+		return true;
+	}
+
+	return false;
+}

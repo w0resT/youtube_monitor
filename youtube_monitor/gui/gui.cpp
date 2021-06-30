@@ -1,5 +1,6 @@
 #include "gui.h"
 #include "../helpers/helpers.h"
+#include "../net/net.h"
 
 namespace gui
 {
@@ -103,20 +104,40 @@ void gui::MainWindow()
 
 	ImGui::SetNextWindowPos(ImVec2(0, 19));
 	ImGui::SetNextWindowSize(ImVec2(WINDOW_WIDTH - 16, WINDOW_HEIGHT - 58));
-	ImGui::Begin("#Main", NULL, gui::window_flags);
+	ImGui::Begin("#MainWindow", NULL, gui::window_flags);
 	{
 		float x = ImGui::GetWindowWidth() / 2 - 90.f;
 		float y = ImGui::GetWindowHeight() / 2 - 50.f;
 
+		ImGui::InputText("Path", &globals::s_path);
+		if (ImGui::Button("Update"))
+		{
+			// Reset
+			globals::v_adrs.clear();
+			globals::v_titles.clear();
+			helpers::LoadUrls();
+		}
+		ImGui::Separator();
 
-		/*ImGui::SetCursorPosX(x);
-		if (ImGui::Button("Exit", ImVec2(180, 40)))
-			globals::exit = true;*/
+		ImGui::BeginChild("ListChild", ImVec2(0, 0), true);
+		{
+			if (!globals::v_titles.empty())
+			{
+				for (auto vec : globals::v_titles)
+				{
+					if (!vec.first.empty()) // Title
+						ImGui::TextWrapped("Title: %s", vec.first.c_str());
+
+					if (!vec.second.empty()) // Viewers
+						ImGui::TextWrapped("Viewers: %s", vec.second.c_str());
+
+					ImGui::Separator();
+				}
+			}
+			ImGui::EndChild();
+		}
 	}
 	ImGui::End();
-
-	// Other windows
-
 
 	// Rendering
 	ImGui::EndFrame();
