@@ -18,7 +18,7 @@ void core::Run()
 			globals::v_titles.push_back(std::make_pair(title, viewers));
 		}
 
-		std::this_thread::sleep_for(std::chrono::seconds(10));
+		std::this_thread::sleep_for(std::chrono::seconds(UPDATE_TIME));
 
 		globals::v_titles.clear();
 	}

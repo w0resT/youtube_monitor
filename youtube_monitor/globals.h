@@ -28,6 +28,7 @@
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 300
 #define DIRECTINPUT_VERSION 0x0800
+#define UPDATE_TIME 10
 
 namespace globals
 {

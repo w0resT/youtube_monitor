@@ -78,6 +78,10 @@ void gui::Run()
 			break;
 
 		gui::MainWindow();
+
+		// Big optimization 
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(50ms);
 	}
 }
 
@@ -102,6 +106,7 @@ void gui::MainWindow()
 		ImGui::EndMainMenuBar();
 	}
 
+	// Main window
 	ImGui::SetNextWindowPos(ImVec2(0, 19));
 	ImGui::SetNextWindowSize(ImVec2(WINDOW_WIDTH - 16, WINDOW_HEIGHT - 58));
 	ImGui::Begin("#MainWindow", NULL, gui::window_flags);
@@ -130,6 +135,8 @@ void gui::MainWindow()
 
 					if (!vec.second.empty()) // Viewers
 						ImGui::TextWrapped("Viewers: %s", vec.second.c_str());
+					else
+						ImGui::TextColored(ImColor(255.f, 0.f, 0.f), "Error, stream is probably over");
 
 					ImGui::Separator();
 				}
