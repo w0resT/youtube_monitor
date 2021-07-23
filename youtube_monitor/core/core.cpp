@@ -11,7 +11,7 @@ void core::run( ) {
 
 	while ( !globals::exit ) 	{
 		// Count of addr = count of threads
-		for ( auto address : globals::addresses ) {
+		for ( auto& address : globals::addresses ) {
 			NetParse net_parse( address );
 			net_parse.parse( );
 

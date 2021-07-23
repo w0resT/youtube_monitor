@@ -1,21 +1,20 @@
 #pragma once
 #include "../globals.h"
 
-namespace gui {
-	extern bool SetupWindow( HINSTANCE m_hInstance );
-	extern void ReleaseWindow( HINSTANCE m_hInstance );
-	extern void run( );
+class Gui {
+public:
+	Gui( );
 
-	// widnows
-	extern void MainWindow( );
+	bool SetupWindow( HINSTANCE m_hInstance );
+	void ReleaseWindow( HINSTANCE m_hInstance );
+	void run( );
 
-	extern void LoadStyle( );
+private:
+	void MainWindow( );
+	void LoadStyle( );
 
-	extern LPCTSTR lpz_class;
-	extern HWND hwnd;
-
-	// bools for windows
-
-
-	extern ImGuiWindowFlags window_flags;
-}
+private:
+	ImGuiWindowFlags m_window_flags;
+	LPCTSTR m_lpz_class;
+	HWND m_hwnd;
+};

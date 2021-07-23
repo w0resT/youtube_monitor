@@ -2,66 +2,19 @@
 #include "../helpers/helpers.h"
 #include "../net/net.h"
 
-namespace gui {
-	LPCTSTR lpz_class = nullptr;
-	HWND hwnd = nullptr;
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+Gui::Gui( ) {
+	this->m_lpz_class = nullptr;
+	this->m_hwnd = nullptr;
+	this->m_window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize 
+		| ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove 
+		| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
 }
 
-bool gui::SetupWindow( HINSTANCE m_hInstance ) {
-	lpz_class = "YouTube Monitor";
-	if ( !helpers::RegisterWindow( m_hInstance, lpz_class ) ) {
-		return false;
-	}
-
-	RECT rect_screen;
-	GetWindowRect( GetDesktopWindow( ), &rect_screen );
-	int x = rect_screen.right / 2 - 300;
-	int y = rect_screen.bottom / 2 - 200;
-
-	HWND hwnd = CreateWindow( lpz_class, lpz_class, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, x, y, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, m_hInstance, NULL );
-	if ( !hwnd ) {
-		return false;
-	}
-
-	if ( !helpers::CreateDeviceD3D( hwnd ) ) {
-		helpers::CleanupDeviceD3D( );
-		UnregisterClass( lpz_class, m_hInstance );
-		return false;
-	}
-
-	// Show the window
-	ShowWindow( hwnd, SW_SHOWDEFAULT );
-	UpdateWindow( hwnd );
-
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION( );
-	ImGui::CreateContext( );
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplWin32_Init( hwnd );
-	ImGui_ImplDX9_Init( globals::d3d_device );
-
-	LoadStyle( );
-
-	return true;
-}
-
-void gui::ReleaseWindow( HINSTANCE m_hInstance ) {
-	ImGui_ImplDX9_Shutdown( );
-	ImGui_ImplWin32_Shutdown( );
-	ImGui::DestroyContext( );
-
-	helpers::CleanupDeviceD3D( );
-	DestroyWindow( hwnd );
-	UnregisterClass( lpz_class, m_hInstance );
-}
-
-void gui::run( ) {
+void Gui::run( ) {
 	// Main loop
 	MSG msg;
 	ZeroMemory( &msg, sizeof( msg ) );
-	while ( msg.message != WM_QUIT ) 	{
+	while ( msg.message != WM_QUIT ) {
 		if ( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) ) {
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
@@ -73,7 +26,7 @@ void gui::run( ) {
 			break;
 		}
 
-		gui::MainWindow( );
+		this->MainWindow( );
 
 		// Big optimization 
 		using namespace std::chrono_literals;
@@ -81,17 +34,67 @@ void gui::run( ) {
 	}
 }
 
-void gui::MainWindow( ) {
+bool Gui::SetupWindow( HINSTANCE m_hInstance ) {
+	this->m_lpz_class = "YouTube Monitor";
+	if ( !helpers::RegisterWindow( m_hInstance, this->m_lpz_class ) ) {
+		return false;
+	}
+
+	RECT rect_screen;
+	GetWindowRect( GetDesktopWindow( ), &rect_screen );
+	int x = rect_screen.right / 2 - 300;
+	int y = rect_screen.bottom / 2 - 200;
+
+	this->m_hwnd = CreateWindow( this->m_lpz_class, this->m_lpz_class, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, x, y, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, m_hInstance, NULL );
+	if ( !this->m_hwnd ) {
+		return false;
+	}
+
+	if ( !helpers::CreateDeviceD3D( this->m_hwnd ) ) {
+		helpers::CleanupDeviceD3D( );
+		UnregisterClass( this->m_lpz_class, m_hInstance );
+		return false;
+	}
+
+	// Show the window
+	ShowWindow( this->m_hwnd, SW_SHOWDEFAULT );
+	UpdateWindow( this->m_hwnd );
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION( );
+	ImGui::CreateContext( );
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplWin32_Init( this->m_hwnd );
+	ImGui_ImplDX9_Init( globals::d3d_device );
+
+	LoadStyle( );
+
+	return true;
+}
+
+void Gui::ReleaseWindow( HINSTANCE m_hInstance ) {
+	ImGui_ImplDX9_Shutdown( );
+	ImGui_ImplWin32_Shutdown( );
+	ImGui::DestroyContext( );
+
+	helpers::CleanupDeviceD3D( );
+	DestroyWindow( this->m_hwnd );
+	UnregisterClass( this->m_lpz_class, m_hInstance );
+}
+
+void Gui::MainWindow( ) {
 	// Start the Dear ImGui frame
 	ImGui_ImplDX9_NewFrame( );
 	ImGui_ImplWin32_NewFrame( );
 	ImGui::NewFrame( );
 
 	// Bar menu
-	if ( ImGui::BeginMainMenuBar( ) ) 	{
-		if ( ImGui::BeginMenu( "Options" ) ) 		{
-			if ( ImGui::MenuItem( "Exit" ) )
+	if ( ImGui::BeginMainMenuBar( ) ) {
+		if ( ImGui::BeginMenu( "Options" ) ) {
+			if ( ImGui::MenuItem( "Exit" ) ) {
 				globals::exit = true;
+			}
 
 			ImGui::EndMenu( );
 		}
@@ -102,13 +105,12 @@ void gui::MainWindow( ) {
 	// Main window
 	ImGui::SetNextWindowPos( ImVec2( 0, 19 ) );
 	ImGui::SetNextWindowSize( ImVec2( WINDOW_WIDTH - 16, WINDOW_HEIGHT - 58 ) );
-	ImGui::Begin( "#MainWindow", NULL, gui::window_flags );
-	{
+	if ( ImGui::Begin( "#MainWindow", NULL, this->m_window_flags ) ) {
 		float x = ImGui::GetWindowWidth( ) / 2 - 90.f;
 		float y = ImGui::GetWindowHeight( ) / 2 - 50.f;
 
 		ImGui::InputText( "Path", &globals::s_path );
-		if ( ImGui::Button( "Update" ) ) 		{
+		if ( ImGui::Button( "Update" ) ) {
 			// Reset
 			globals::addresses.clear( );
 			globals::parsed_data.clear( );
@@ -116,10 +118,9 @@ void gui::MainWindow( ) {
 		}
 		ImGui::Separator( );
 
-		ImGui::BeginChild( "ListChild", ImVec2( 0, 0 ), true );
-		{
-			if ( !globals::parsed_data.empty( ) ) 			{
-				for ( auto data : globals::parsed_data ) 				{
+		if ( ImGui::BeginChild( "ListChild", ImVec2( 0, 0 ), true ) ) {
+			if ( !globals::parsed_data.empty( ) ) {
+				for ( auto& data : globals::parsed_data ) {
 					// If title or viewers neither is empty so stream is over
 					// and we don't need to check another one
 					if ( data.first.empty( ) ) {
@@ -147,7 +148,7 @@ void gui::MainWindow( ) {
 	D3DCOLOR clear_col_dx = D3DCOLOR_RGBA( ( int )( clear_color.x * 255.0f ), ( int )( clear_color.y * 255.0f ), ( int )( clear_color.z * 255.0f ), ( int )( clear_color.w * 255.0f ) );
 	globals::d3d_device->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0 );
 
-	if ( globals::d3d_device->BeginScene( ) >= 0 ) 	{
+	if ( globals::d3d_device->BeginScene( ) >= 0 ) {
 		ImGui::Render( );
 		ImGui_ImplDX9_RenderDrawData( ImGui::GetDrawData( ) );
 		globals::d3d_device->EndScene( );
@@ -156,11 +157,12 @@ void gui::MainWindow( ) {
 	HRESULT result = globals::d3d_device->Present( NULL, NULL, NULL, NULL );
 
 	// Handle loss of D3D9 device
-	if ( result == D3DERR_DEVICELOST && globals::d3d_device->TestCooperativeLevel( ) == D3DERR_DEVICENOTRESET )
+	if ( result == D3DERR_DEVICELOST && globals::d3d_device->TestCooperativeLevel( ) == D3DERR_DEVICENOTRESET ) {
 		helpers::ResetDevice( );
+	}
 }
 
-void gui::LoadStyle( ) {
+void Gui::LoadStyle( ) {
 	ImGuiStyle& style = ImGui::GetStyle( );
 
 	style.WindowRounding = 0.f;
@@ -176,7 +178,6 @@ void gui::LoadStyle( ) {
 	style.TabRounding = 4.f;
 
 	ImGui::GetStyle( ) = style;
-
 	ImVec4* colors = style.Colors;
 	colors[ ImGuiCol_Text ] = ImVec4( 0.00f, 0.00f, 0.00f, 1.00f );
 	colors[ ImGuiCol_TextDisabled ] = ImVec4( 0.60f, 0.60f, 0.60f, 1.00f );
