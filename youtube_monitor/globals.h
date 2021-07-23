@@ -30,14 +30,13 @@
 #define DIRECTINPUT_VERSION 0x0800
 #define UPDATE_TIME 10
 
-namespace globals
-{
+namespace globals {
 	extern LPDIRECT3D9 d3d;
 	extern LPDIRECT3DDEVICE9 d3d_device;
 	extern D3DPRESENT_PARAMETERS d3d_params;
 
-	extern std::vector< std::pair< std::string, std::string > > v_titles;
-	extern std::vector < std::string > v_adrs;
+	extern std::vector< std::pair< std::string, std::string > > parsed_data;
+	extern std::vector < std::string > addresses;
 
 	extern std::string s_path;
 

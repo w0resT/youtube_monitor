@@ -3,23 +3,24 @@
 #include "../net/net.h"
 #include "core.h"
 
-void core::Run()
-{
+void core::run( ) {
 	// Loading urls from the file
-	if (!helpers::LoadUrls())
+	if ( !helpers::LoadUrls( ) ) {
 		return;
+	}
 
-	while (!globals::exit)
-	{
+	while ( !globals::exit ) 	{
 		// Count of addr = count of threads
-		for (auto req_adr : globals::v_adrs)
-		{
-			auto [title, viewers] = net::SendReq(req_adr);
-			globals::v_titles.push_back(std::make_pair(title, viewers));
+		for ( auto address : globals::addresses ) {
+			NetParse net_parse( address );
+			net_parse.parse( );
+
+			auto parsed_data = net_parse.GetData( );
+			globals::parsed_data.push_back( parsed_data );
 		}
 
-		std::this_thread::sleep_for(std::chrono::seconds(UPDATE_TIME));
+		std::this_thread::sleep_for( std::chrono::seconds( UPDATE_TIME ) );
 
-		globals::v_titles.clear();
+		globals::parsed_data.clear( );
 	}
 }
