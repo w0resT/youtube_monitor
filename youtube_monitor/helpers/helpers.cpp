@@ -6,13 +6,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 ATOM helpers::RegisterWindow( HINSTANCE hInstance, LPCTSTR lpzClassName ) {
 	WNDCLASS window_class = { 0 };
-	window_class.lpfnWndProc = ( WNDPROC )WndProc;
+	window_class.lpfnWndProc = reinterpret_cast< WNDPROC >( WndProc );
 	window_class.style = CS_HREDRAW | CS_VREDRAW;
 	window_class.hInstance = hInstance;
 	window_class.lpszClassName = lpzClassName;
 	window_class.hCursor = LoadCursor( NULL, IDC_ARROW );
-	window_class.hbrBackground = ( HBRUSH )COLOR_APPWORKSPACE;
-	window_class.hIcon = ( HICON )LoadImage( hInstance, MAKEINTRESOURCE( IDI_ICON1 ), IMAGE_ICON, 32, 32, 0 );
+	window_class.hbrBackground = reinterpret_cast< HBRUSH >( COLOR_APPWORKSPACE );
+	window_class.hIcon = reinterpret_cast< HICON >( LoadImage( hInstance, MAKEINTRESOURCE( IDI_ICON1 ), IMAGE_ICON, 32, 32, 0 ) );
 
 	return RegisterClass( &window_class );
 }
@@ -31,23 +31,32 @@ bool helpers::CreateDeviceD3D( HWND hWnd ) {
 	globals::d3d_params.AutoDepthStencilFormat = D3DFMT_D16;
 	globals::d3d_params.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
-	if ( globals::d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &globals::d3d_params, &globals::d3d_device ) < 0 )
+	if ( globals::d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &globals::d3d_params, &globals::d3d_device ) < 0 ) {
 		return false;
+	}
 
 	return true;
 }
 
 void helpers::CleanupDeviceD3D( ) {
-	if ( globals::d3d_device ) { globals::d3d_device->Release( ); globals::d3d_device = NULL; }
-	if ( globals::d3d ) { globals::d3d->Release( ); globals::d3d = NULL; }
+	if ( globals::d3d_device ) { 
+		globals::d3d_device->Release( ); 
+		globals::d3d_device = NULL; 
+	}
+
+	if ( globals::d3d ) { 
+		globals::d3d->Release( ); 
+		globals::d3d = NULL; 
+	}
 }
 
 void helpers::ResetDevice( ) {
 	ImGui_ImplDX9_InvalidateDeviceObjects( );
 
 	HRESULT m_hResult = globals::d3d_device->Reset( &globals::d3d_params );
-	if ( m_hResult == D3DERR_INVALIDCALL )
+	if ( m_hResult == D3DERR_INVALIDCALL ) {
 		IM_ASSERT( 0 );
+	}
 
 	ImGui_ImplDX9_CreateDeviceObjects( );
 }
@@ -60,8 +69,9 @@ std::string helpers::ParseString( std::string before, std::string after, std::st
 		t = t.substr( 0, loc );
 		return t;
 	}
-	else
+	else {
 		return "";
+	}
 }
 
 bool helpers::LoadUrls( ) {
@@ -69,13 +79,16 @@ bool helpers::LoadUrls( ) {
 	if ( in.is_open( ) ) {
 		std::string line;
 		while ( getline( in, line ) ) {
+			// If we got only stream id
+			if ( line.find( ".com" ) == std::string::npos ) {
+				line.insert( 0, std::string( "https://www.youtube.com/" ) );
+			}
+
 			globals::addresses.push_back( line );
 		}
-
 		in.close( );
 
 		return true;
 	}
-
 	return false;
 }
